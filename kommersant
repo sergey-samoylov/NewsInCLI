@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+heading=$(w3m https://kommersant.ru/ | cat | sed -n '/Главные новости/,/Вся лента/p'| fzf)
+sleep 1
+echo "Выбрана новость: ${heading}"
+url_from_heading=$(w3m -o accept_encoding=UTF-8 -dump_source https://kommersant.ru | cat | grep "${heading}" -B 5 | cut -d "\"" -f 2 | grep "doc" | cut -d "?" -f 1)
+sleep 1
+echo "Готовлю ссылку"
+
+final_url="https://kommersant.ru${url_from_heading}"
+sleep 1
+echo "Ссылка новости ${final_url}"
+
+w3m ${final_url} | cat | sed -n "/${heading}/,/Автор/p"
